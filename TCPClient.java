@@ -74,7 +74,7 @@ public class TCPClient {
 			while (jobInfo[0].equals("NONE")==false){ //Only do loop if there are jobs
 				if (jobInfo[0].equals("JOBN")){ //Only schedule if JOBN
 					if (serverID == typeNumber) serverID=0; //LRR - reset to 0 if SCHD has gone through all servers of same type.
-					instruct("SCHD "+ jobInfo[2]+" " +serverType+" "+serverID, dout, din); //Sends SCHD on Largest Server Type at ID, Recieve OK
+					instruct("SCHD "+ jobInfo[2]+" " +serverType+" "+serverID, dout, din); //Sends SCHD + Job ID + Largest Server Type + ServerID, Recieve OK
 					serverID++; //Increment so next job is on next server of same type
 					}
 				rec = instruct("REDY", dout, din); //Send REDY, Receive next job
