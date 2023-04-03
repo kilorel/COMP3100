@@ -9,12 +9,12 @@ public class TCPClient {
 		try {
 		dout.write((input+"\n").getBytes());
 		dout.flush();
-		System.out.println("SENT: "+input);
+		//System.out.println("SENT: "+input);
 		String received = (String)din.readLine();
-		System.out.println("RCVD: "+received);
+		//System.out.println("RCVD: "+received);
 		return received;
 		}	catch(Exception e){System.out.println(e);}
-		return " ";
+		return "";
 	}
 
 	public static void main(String[] args){
@@ -29,8 +29,8 @@ public class TCPClient {
 			String [] jobInfo;
 			String [] dataInfo;
 			String [][] serverInfo;
-			String rec= " "; //received String
-			String serverType = " ";
+			String rec= ""; //received String for use outside of instruct function
+			String serverType = "";
 			int serverID = 0;
 			int serverCore = 0;
 			int typeNumber = 0; 
@@ -48,62 +48,45 @@ public class TCPClient {
 			rec = instruct("GETS All", dout, din); //Send GETS All, Receive Data Info
 			dataInfo = rec.split(" "); //Create array of Data Info using received string after GETS All
 				
+			serverInfo = new String [Integer.parseInt(dataInfo[1])][]; //Create a 2D array of size dataInfo[1] - which is amount of servers
 			rec = instruct("OK", dout, din); //Send OK, Receive Server Info
-			serverInfo = new String [Integer.parseInt(dataInfo[1])][]; //Create a 2D array of size dataInfo[1]()
-			//Populate Server Info Array
-			serverInfo[0] = rec.split(" "); //Takes first received from function
-			for (int i = 1; i < Integer.parseInt(dataInfo[1]);i++){ // Takes everything else;
+			serverInfo[0] = rec.split(" "); //Takes received from function sets it to first index
+			for (int i = 1; i < Integer.parseInt(dataInfo[1]);i++){ // Takes everything else and sets to following indexes;
 				rec = (String)din.readLine();
 				serverInfo[i] = rec.split(" ");
 			}
 
-			for (int i = 0; i < serverInfo.length;i++){
-				if (Integer.parseInt(serverInfo[i][4])>serverCore){
-					typeNumber = 1;
-					serverType = serverInfo[i][0];
-					serverID = Integer.parseInt(serverInfo[i][1]);
-					serverCore = Integer.parseInt(serverInfo[i][4]);
+			for (int i = 0; i < serverInfo.length;i++){ //Algorithm for finding the largest server
+				if (Integer.parseInt(serverInfo[i][4])>serverCore){ //check for new largest server size
+					typeNumber = 1; //reset amount of largest servers if new largest server size
+					serverType = serverInfo[i][0]; //Grabs server Type Name
+					serverCore = Integer.parseInt(serverInfo[i][4]); //set new core amount to compare against
 				}
-				else {
+				else { //Add to amount of largest servers
 					if (serverType.equals(serverInfo[i][0])){
 						typeNumber++;
 					}
 				}
 			}
 
-			System.out.println("Server Type: "+ serverType);
-			System.out.println("Server ID: "+serverID);
-			System.out.println("No. of Servers: "+typeNumber);
+			instruct("OK", dout, din); //Send OK, Receive .
 
-			instruct("OK", dout, din); //Send OK
-
-			//SCHD
-			while (jobInfo[0].equals("NONE")==false){
-				if (jobInfo[0].equals("JOBN")){
-					if (serverID == typeNumber) serverID=0;
-					dout.write(("SCHD "+ jobInfo[2]+" " +serverType+" "+serverID+"\n").getBytes());
-					dout.flush();
-					//System.out.println("SENT: SCHD");
-					//System.out.println("Running Task "+jobInfo[2]+" on "+serverType+" "+serverID);
-					serverID++;
-
-					rec = (String)din.readLine();
-					//System.out.println("RCVD: "+str);
-				}
-
-				rec = instruct("REDY", dout, din); //Send REDY, Receive Job Info
+			while (jobInfo[0].equals("NONE")==false){ //Only do loop if there are jobs
+				if (jobInfo[0].equals("JOBN")){ //Only schedule if JOBN
+					if (serverID == typeNumber) serverID=0; //LRR - reset to 0 if SCHD has gone through all servers of same type.
+					rec = instruct("SCHD "+ jobInfo[2]+" " +serverType+" "+serverID, dout, din); //SCHD job, Recieve OK
+					serverID++; //Increment so next job is on next server of same type
+					}
+				rec = instruct("REDY", dout, din); //Send REDY, Receive next job
 				jobInfo = rec.split(" ");					
 				}
 				
-				//QUIT
 				instruct("QUIT", dout, din); //Send QUIT, Receive QUIT
 			    
-			    din.close();
-			    dout.close();
-			    s.close();
-			
-		}catch(Exception e){System.out.println(e);}
-		
-	}
+			    din.close(); //close input stream
+			    dout.close(); //close output stream
+			    s.close(); //close socket
 
+		}catch(Exception e){System.out.println(e);}
+	}
 }
