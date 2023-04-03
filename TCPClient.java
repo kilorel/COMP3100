@@ -7,14 +7,14 @@ public class TCPClient {
 
 	static String instruct(String input, DataOutputStream dout, BufferedReader din){ 
 		try {
-		dout.write((input+"\n").getBytes());
-		dout.flush();
+		dout.write((input+"\n").getBytes()); //Send message to server
+		dout.flush(); //flush forces any buffered output bytes to be written out to the stream
 		//System.out.println("SENT: "+input);
-		String received = (String)din.readLine();
+		String received = (String)din.readLine(); //recieve message from server
 		//System.out.println("RCVD: "+received);
-		return received;
+		return received; //return for use by string variable rec
 		}	catch(Exception e){System.out.println(e);}
-		return "";
+		return ""; 
 	}
 
 	public static void main(String[] args){
