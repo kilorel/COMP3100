@@ -51,13 +51,13 @@ public class TCPClient {
 			serverInfo = new String [Integer.parseInt(dataInfo[1])][]; //Create a 2D array of size dataInfo[1] - which is amount of servers
 			rec = instruct("OK", dout, din); //Send OK, Receive Server Info
 			serverInfo[0] = rec.split(" "); //Takes received from function sets it to first index
-			for (int i = 1; i < Integer.parseInt(dataInfo[1]);i++){ // Takes everything else and sets to following indexes;
+			for (int i = 1; i < serverInfo.length;i++){ // Takes everything else and sets to following indexes;
 				rec = (String)din.readLine();
 				serverInfo[i] = rec.split(" ");
 			}
 
 			for (int i = 0; i < serverInfo.length;i++){ //Algorithm for finding the largest server
-				if (Integer.parseInt(serverInfo[i][4])>serverCore){ //check for new largest server size
+				if (Integer.parseInt(serverInfo[i][4])>serverCore){ //check for new largest server size using core amount
 					typeNumber = 1; //reset amount of largest servers if new largest server size
 					serverType = serverInfo[i][0]; //Grabs server Type Name
 					serverCore = Integer.parseInt(serverInfo[i][4]); //set new core amount to compare against
