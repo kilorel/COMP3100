@@ -9,9 +9,9 @@ public class TCPClient {
 		try {
 		dout.write((input+"\n").getBytes()); //Send message to server
 		dout.flush(); //flush forces any buffered output bytes to be written out to the stream
-		//System.out.println("SENT: "+input);
+		System.out.println("SENT: "+input);
 		String received = (String)din.readLine(); //recieve message from server
-		//System.out.println("RCVD: "+received);
+		System.out.println("RCVD: "+received);
 		return received; //return for use by string variable rec
 		}	catch(Exception e){System.out.println(e);}
 		return ""; 
@@ -45,7 +45,7 @@ public class TCPClient {
 			rec = instruct("REDY", dout, din); //Send REDY, Receive Job Info
 			jobInfo = rec.split(" "); //Create array of Job Info using received string after REDY
 
-			rec = instruct("GETS All", dout, din); //Send GETS All, Receive Data Info
+			rec = instruct("GETS Capable " + jobInfo[4] + " " + jobInfo[5] + " " + jobInfo[6], dout, din); //Send GETS All, Receive Data Info
 			dataInfo = rec.split(" "); //Create array of Data Info using received string after GETS All
 				
 			serverInfo = new String [Integer.parseInt(dataInfo[1])][]; //Create a 2D array of size dataInfo[1] - which is amount of servers
