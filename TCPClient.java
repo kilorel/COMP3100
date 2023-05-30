@@ -67,8 +67,7 @@ public class TCPClient {
 						// Schedules jobs to run in parallel if cores are available
 						if (Integer.parseInt(serverInfo[i][8]) > 0) {
 							if (Integer.parseInt(jobInfo[4]) <= Integer.parseInt(serverInfo[i][4])) {
-								instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout,
-										din);
+								instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout, din);								din);
 								running = true;
 								break;
 							}
@@ -84,8 +83,7 @@ public class TCPClient {
 					if (running == false) {
 						for (int i = 0; i < serverInfo.length; i++) {
 							if (serverInfo[i][7].equals("0")) {
-								instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout,
-										din);
+								instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout, din);
 								checked = true;
 								break;
 							}
@@ -101,8 +99,7 @@ public class TCPClient {
 								min = Integer.parseInt(serverInfo[i][7]);
 							}
 						}
-						instruct("SCHD " + jobInfo[2] + " " + serverInfo[index][0] + " " + serverInfo[index][1], dout,
-								din);
+						instruct("SCHD " + jobInfo[2] + " " + serverInfo[index][0] + " " + serverInfo[index][1], dout, din);
 					}
 
 				}
