@@ -29,8 +29,7 @@ public class TCPClient {
 			String[] dataInfo;
 			String[][] serverInfo;
 			String rec = ""; // received String for use outside of instruct function
-			boolean running = false;
-			boolean checked = false;
+			
 
 			instruct("HELO", dout, din); // Send HELO, Receive OK
 
@@ -60,7 +59,19 @@ public class TCPClient {
 					rec = instruct("OK", dout, din); // Send OK, Receive .
 
 					// Schedules job in first available server that has no running jobs
+					boolean running = false;
+					boolean checked = false;
+					
 					for (int i = 0; i < serverInfo.length; i++) {
+						//Schedules jobs to run in parallel if cores are available
+						if (Integer.parseInt(serverInfo[i][8]) > 0){
+							if (Integer.parseInt(jobInfo[4]) <= Integer.parseInt(serverInfo[i][4])){
+								instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout, din);
+								running = true;
+								break;
+							}
+						}
+						//Schedules job in first available server that has no running jobs
 						if (serverInfo[i][8].equals("0")) {
 							instruct("SCHD " + jobInfo[2] + " " + serverInfo[i][0] + " " + serverInfo[i][1], dout, din);
 							running = true;
@@ -77,10 +88,19 @@ public class TCPClient {
 							}
 						}
 					}
-					// Schedules job in the first capable server
+					// Schedules job in the server with the least amount of waiting jobs
 					if (running == false && checked == false){
-						instruct("SCHD " + jobInfo[2] + " " + serverInfo[0][0] + " " + serverInfo[0][1], dout, din);
+						int min = Integer.parseInt(serverInfo[0][7]);
+						int index = 0;
+						for (int i = 1; i<serverInfo.length;i++){
+							if (Integer.parseInt(serverInfo[i][7])<=min){
+								index = i;
+								min = Integer.parseInt(serverInfo[i][7]);
+							}
+						}
+						instruct("SCHD " + jobInfo[2] + " " + serverInfo[index][0] + " " + serverInfo[index][1], dout, din);
 					}
+
 
 				}
 				rec = instruct("REDY", dout, din); // Send REDY, Receive next job
